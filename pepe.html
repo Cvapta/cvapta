@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #text-container {
+            font-size: 10vw;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="text-container">ФА</div>
+
+    <script>
+        const words = ['ФА', 'ШНЕЛЕ', 'ПЭПЭ'];
+        let wordIndex = 0;
+        const container = document.getElementById('text-container');
+        
+        // Таймер на 30 секунд
+        let timeLeft = 30;
+        
+        // Функция обновления таймера в title
+        function updateTimer() {
+            // Показываем только секунды (без минут)
+            document.title = timeLeft.toString();
+            
+            if (timeLeft > 0) {
+                timeLeft--;
+            }
+        }
+        
+        // Запускаем таймер (обновление каждую секунду)
+        setInterval(updateTimer, 1000);
+        
+        // Смена текста каждую секунду
+        setInterval(() => {
+            wordIndex = (wordIndex + 1) % words.length;
+            container.textContent = words[wordIndex];
+        }, 1000);
+        
+        // Начальная установка title
+        updateTimer();
+    </script>
+</body>
+</html>

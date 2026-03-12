@@ -1,92 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Переход...</title>
-  <style>
-    body {
-      margin: 0;
-      background: #ffffff;
-      color: #000000;
-      font-family: Arial, Helvetica, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .wrap {
-      padding: 20px;
-    }
-
-    h1 {
-      margin: 0 0 12px;
-      font-size: 36px;
-      font-weight: bold;
-    }
-
-    p {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    #timer {
-      font-weight: bold;
-    }
-
-    a {
-      display: inline-block;
-      margin-top: 20px;
-      font-size: 18px;
-      color: #000000;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=https://t.me/CvaptaMoney_bot/game">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-  <div class="wrap">
-    <h1>Переход в Telegram-бот</h1>
-    <p>Вы будете перенаправлены через <span id="timer">7</span> секунд.</p>
-    <a href="https://t.me/CvaptaMoney_bot">Нажмите сюда, если переход не сработал</a>
-  </div>
-
-  <script>
-    const redirectUrl = "https://t.me/CvaptaMoney_bot";
-    let secondsLeft = 7;
-    const timerEl = document.getElementById("timer");
-
-    timerEl.textContent = secondsLeft;
-
-    const interval = setInterval(() => {
-      secondsLeft--;
-      timerEl.textContent = secondsLeft;
-
-      if (secondsLeft <= 0) {
-        clearInterval(interval);
-        window.location.href = redirectUrl;
-      }
-    }, 1000);
-
-    async function showNotification() {
-      if (!("Notification" in window)) return;
-
-      try {
-        if (Notification.permission === "default") {
-          await Notification.requestPermission();
-        }
-
-        if (Notification.permission === "granted") {
-          new Notification("Переход в Telegram-бот", {
-            body: "Через 7 секунд откроется @CvaptaMoney_bot"
-          });
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    showNotification();
-  </script>
 </body>
 </html>

@@ -2529,6 +2529,7 @@
     .reset-item .more-title { color: #ffd7dd; }
     .reset-item .more-desc { color: rgba(255, 225, 230, 0.82); }
     #settings-btn, #promo-code-item, #stars-item, #settings-modal, #promo-code-modal { display: none !important; }
+    #stars-item, #stars-modal, #stars-history-modal, #stars-warning-modal, #stars-receipt-modal, #stars-notification, .stars-history-bottom-panel, .stars-card, .stars-history-list, .stars-history-item { display: none !important; visibility: hidden !important; pointer-events: none !important; }
     .page-loader {
       z-index: 99999;
       opacity: 1;
@@ -3125,6 +3126,12 @@
     const banTimer = document.getElementById('ban-timer');
     const banTimeElement = document.getElementById('ban-time');
 
+    // Полностью убираем функционал звёзд/чеков из интерфейса
+    const removedStarsItemNode = document.getElementById('stars-item');
+    if (removedStarsItemNode) removedStarsItemNode.remove();
+    const removedStarsNotificationNode = document.getElementById('stars-notification');
+    if (removedStarsNotificationNode) removedStarsNotificationNode.remove();
+
     // Stars Elements
     const starsHistoryList = document.getElementById('stars-history-list');
     const starsHistoryEmpty = document.getElementById('stars-history-empty');
@@ -3146,6 +3153,20 @@
 
     // Флаг для отслеживания ожидания перехода между модальными окнами
     let isModalTransitioning = false;
+
+    function reopenMoreSafely(delay = 300) {
+      setTimeout(() => {
+        if (!moreModal) return;
+        toggleModal(moreModal);
+        const moreContent = moreModal.querySelector('.glass-content');
+        if (moreContent) {
+          moreContent.style.pointerEvents = 'none';
+          setTimeout(() => {
+            moreContent.style.pointerEvents = '';
+          }, 350);
+        }
+      }, delay);
+    }
 
     // Функция для проверки текущего времени
     function checkTimeRestrictions() {
@@ -3410,7 +3431,7 @@
       closeDaily.addEventListener('click', () => {
         toggleModal(dailyRewardModal);
         // Возвращаемся в "Ещё"
-        setTimeout(() => toggleModal(moreModal), 300);
+        reopenMoreSafely(300);
       });
       
 
@@ -3424,34 +3445,29 @@
       closeStats.addEventListener('click', () => {
         toggleModal(statsModal);
         // ВОЗВРАЩАЕМСЯ В "ЕЩЁ" (исправлено!)
-        setTimeout(() => toggleModal(moreModal), 300);
+        reopenMoreSafely(300);
       });
       
       resetItem.addEventListener('click', () => toggleModal(resetModal));
       closeReset.addEventListener('click', () => {
         toggleModal(resetModal);
         // Возвращаемся в "Ещё"
-        setTimeout(() => toggleModal(moreModal), 300);
+        reopenMoreSafely(300);
       });
       
       // 5. ОБРАБОТЧИК ДЛЯ ЗАБЛОКИРОВАННОЙ КНОПКИ ЗВЁЗД (СЕРАЯ, НЕ РАБОТАЕТ)
       if (starsItem) {
         starsItem.addEventListener('click', function(e) {
-          if (this.classList.contains('disabled')) {
-            e.stopPropagation();
-            showToast('Звёзды временно недоступны');
-            return;
-          }
-          // Если не заблокировано (но по умолчанию заблокировано)
-          updateStarsProgress();
-          toggleModal(starsModal);
+          e.stopPropagation();
+          showToast('Раздел звёзд удалён');
+          return;
         });
       }
       
       if (closeStars && starsModal) closeStars.addEventListener('click', () => {
         toggleModal(starsModal);
         // Возвращаемся в "Ещё"
-        setTimeout(() => toggleModal(moreModal), 300);
+        reopenMoreSafely(300);
       });
       
       if (starsHistoryBtn && starsHistoryModal) starsHistoryBtn.addEventListener('click', () => {
@@ -3462,10 +3478,7 @@
       if (closeStarsHistory && starsHistoryModal) closeStarsHistory.addEventListener('click', () => {
         toggleModal(starsHistoryModal);
         // При выходе из истории выводов переходим в основную вкладку звёзд
-        setTimeout(() => {
-          updateStarsProgress();
-          toggleModal(starsModal);
-        }, 300);
+        reopenMoreSafely(300);
       });
       
       if (closeFullHistory && fullHistoryModal) closeFullHistory.addEventListener('click', () => {
@@ -3502,7 +3515,7 @@
           const starsAmount = parseInt(this.dataset.stars);
           
           if (clicks >= requiredClicks) {
-            showStarsWarning(rewardId, requiredClicks, starsAmount);
+            showToast('Раздел звёзд удалён');
           } else {
             showToast('Недостаточно кликов для этой награды');
           }
@@ -3513,14 +3526,8 @@
       
       // 6. ОБРАБОТЧИК ДЛЯ КНОПКИ В УВЕДОМЛЕНИИ - ТОЖЕ БЛОКИРУЕМ
       if (starsNotificationBtn) starsNotificationBtn.addEventListener('click', function() {
-        if (starsItem && starsItem.classList.contains('disabled')) {
-          hideStarsNotification();
-          showToast('Звёзды временно недоступны');
-          return;
-        }
         hideStarsNotification();
-        updateStarsProgress();
-        toggleModal(starsModal);
+        showToast('Раздел звёзд удалён');
       });
       
       if (themeSelect) themeSelect.addEventListener('change', handleThemeChange);
@@ -3543,8 +3550,7 @@
               isModalTransitioning = true;
               toggleModal(starsHistoryModal);
               setTimeout(() => {
-                updateStarsProgress();
-                toggleModal(starsModal);
+                reopenMoreSafely(0);
                 isModalTransitioning = false;
               }, 300);
             } else if (modalId === 'stars-warning-modal') {
@@ -3552,7 +3558,7 @@
               isModalTransitioning = true;
               toggleModal(starsWarningModal);
               setTimeout(() => {
-                toggleModal(starsModal);
+                reopenMoreSafely(0);
                 isModalTransitioning = false;
               }, 300);
             } else if (modalId === 'stars-receipt-modal') {
@@ -3560,11 +3566,7 @@
               isModalTransitioning = true;
               toggleModal(starsReceiptModal);
               setTimeout(() => {
-                if (!currentReceiptContext || !currentReceiptContext.isFromHistory) {
-                  toggleModal(starsModal);
-                } else {
-                  toggleModal(starsHistoryModal);
-                }
+                reopenMoreSafely(0);
                 isModalTransitioning = false;
               }, 300);
             } else if (modalId === 'stars-modal') {
@@ -3572,7 +3574,7 @@
               isModalTransitioning = true;
               toggleModal(starsModal);
               setTimeout(() => {
-                toggleModal(moreModal);
+                reopenMoreSafely(0);
                 isModalTransitioning = false;
               }, 300);
             } else if (modalId === 'settings-modal') {
@@ -3586,7 +3588,7 @@
               isModalTransitioning = true;
               toggleModal(modal);
               setTimeout(() => {
-                toggleModal(moreModal);
+                reopenMoreSafely(0);
                 isModalTransitioning = false;
               }, 300);
             }

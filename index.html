@@ -44,14 +44,14 @@
     <img src="icon.png" alt="" class="icon">
     <div class="timer" id="timer">00:00:00:00</div>
 
+    <!-- Музыка: ForgiveBurial.mp3 -->
     <audio id="music" src="ForgiveBurial.mp3" loop preload="auto"></audio>
 
     <script>
         (function() {
             // ===== Мигающий favicon (чёрный ↔ белый) =====
-            const favSize = 32; // 32x32 px
+            const favSize = 32;
 
-            // Создаём два квадратных favicon'а через canvas
             function makeFavicon(color) {
                 const canvas = document.createElement('canvas');
                 canvas.width = favSize;
@@ -65,7 +65,6 @@
             const favBlack = makeFavicon('#000000');
             const favWhite = makeFavicon('#ffffff');
 
-            // Находим или создаём тег <link rel="icon">
             let favLink = document.querySelector("link[rel*='icon']");
             if (!favLink) {
                 favLink = document.createElement('link');

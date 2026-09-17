@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таймер до 7 ноября 2026</title>
+    <title>Я тут один</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background-color: #000;
             color: #fff;
@@ -41,26 +37,112 @@
             white-space: nowrap;
             pointer-events: none;
         }
-        #music {
-            display: none;
-        }
+        #music { display: none; }
     </style>
 </head>
 <body>
     <img src="icon.png" alt="" class="icon">
     <div class="timer" id="timer">00:00:00:00</div>
 
-    <!-- Замените src на путь к вашему m4a-файлу -->
-    <audio id="music" src="Forgive Burial.m4a" loop preload="auto"></audio>
+    <audio id="music" src="ForgiveBurial.mp3" loop preload="auto"></audio>
 
     <script>
         (function() {
+            // ===== Мигающий favicon (чёрный ↔ белый) =====
+            const favSize = 32; // 32x32 px
+
+            // Создаём два квадратных favicon'а через canvas
+            function makeFavicon(color) {
+                const canvas = document.createElement('canvas');
+                canvas.width = favSize;
+                canvas.height = favSize;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = color;
+                ctx.fillRect(0, 0, favSize, favSize);
+                return canvas.toDataURL('image/png');
+            }
+
+            const favBlack = makeFavicon('#000000');
+            const favWhite = makeFavicon('#ffffff');
+
+            // Находим или создаём тег <link rel="icon">
+            let favLink = document.querySelector("link[rel*='icon']");
+            if (!favLink) {
+                favLink = document.createElement('link');
+                favLink.rel = 'icon';
+                document.head.appendChild(favLink);
+            }
+
+            let favState = false;
+            favLink.href = favBlack;
+
+            setInterval(() => {
+                favState = !favState;
+                favLink.href = favState ? favWhite : favBlack;
+            }, 500);
+
+            // ===== Анимированный title =====
+            const titleNode = document.querySelector('title');
+
+            const frames = [
+                { text: "Я",              delay: 500 },
+                { text: "Я тут",          delay: 500 },
+                { text: "Я тут один",     delay: 1600 },
+
+                { text: "7",                  delay: 450 },
+                { text: "7 ноября",           delay: 450 },
+                { text: "7 ноября я",         delay: 450 },
+                { text: "7 ноября я буду",    delay: 450 },
+                { text: "7 ноября я буду...", delay: 1600 },
+
+                { text: "стёрт", delay: 900 },
+
+                { text: "((((",                                         delay: 400 },
+                { text: "(((((((((",                                    delay: 400 },
+                { text: "(((((((((((((((((",                            delay: 400 },
+                { text: "((((((((((((((((((((((((",                     delay: 400 },
+                { text: "((((((((((((((((((((((((((((((",               delay: 1600 },
+
+                { text: "стёрт", delay: 900 }
+            ];
+
+            let i = 0;
+            let pulseTimer = null;
+
+            function clearPulse() {
+                if (pulseTimer) {
+                    clearInterval(pulseTimer);
+                    pulseTimer = null;
+                }
+            }
+
+            function playFrame() {
+                clearPulse();
+                const frame = frames[i];
+
+                titleNode.textContent = frame.text;
+
+                let flip = false;
+                pulseTimer = setInterval(() => {
+                    titleNode.textContent = flip ? frame.text : frame.text + "\u200B";
+                    flip = !flip;
+                }, 250);
+
+                setTimeout(() => {
+                    clearPulse();
+                    i = (i + 1) % frames.length;
+                    playFrame();
+                }, frame.delay);
+            }
+
+            setTimeout(playFrame, 500);
+
             // ===== Таймер до 7 ноября 2026 =====
-            const target = new Date(2026, 10, 7, 0, 0, 0);
+            const targetDate = new Date(2026, 10, 7, 0, 0, 0);
 
             function updateTimer() {
                 const now = new Date();
-                const diff = target - now;
+                const diff = targetDate - now;
 
                 if (diff <= 0) {
                     document.getElementById('timer').textContent = '00:00:00:00';

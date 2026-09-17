@@ -16,13 +16,23 @@
             font-family: 'Segoe UI', 'Arial', sans-serif;
             height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 4vh;
             overflow: hidden;
             cursor: pointer;
         }
+        .icon {
+            max-width: 25vw;
+            max-height: 25vh;
+            object-fit: contain;
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+        }
         .timer {
-            font-size: clamp(2rem, 15vw, 10rem);
+            font-size: clamp(2rem, 12vw, 8rem);
             font-weight: 700;
             letter-spacing: 0.05em;
             text-align: center;
@@ -37,10 +47,11 @@
     </style>
 </head>
 <body>
+    <img src="icon.png" alt="" class="icon">
     <div class="timer" id="timer">00:00:00:00</div>
 
-    <!-- Замените src на путь к вашему mp3-файлу -->
-    <audio id="music" src="Forgive Burial.mp3" loop preload="auto"></audio>
+    <!-- Замените src на путь к вашему m4a-файлу -->
+    <audio id="music" src="Forgive Burial.m4a" loop preload="auto"></audio>
 
     <script>
         (function() {
@@ -78,7 +89,7 @@
                 if (started) return;
                 started = true;
 
-                music.volume = 0.6; // громкость 0.0 – 1.0
+                music.volume = 0.6;
                 music.play().catch(err => {
                     console.warn('Не удалось запустить музыку:', err);
                 });

@@ -1,59 +1,91 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bye</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-    }
-
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    img {
-      display: block;
-      max-width: min(320px, 80vw);
-      max-height: 80vh;
-      object-fit: contain;
-      user-select: none;
-      -webkit-user-drag: none;
-      pointer-events: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таймер до 7 ноября 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .timer {
+            font-size: clamp(2rem, 15vw, 10rem);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            line-height: 1.2;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        #music {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <img src="icon.png" alt="icon" draggable="false" />
-  <audio id="bgMusic" src="no.mp3" autoplay loop></audio>
+    <div class="timer" id="timer">00:00:00:00</div>
 
-  <script>
-    const audio = document.getElementById('bgMusic');
+    <!-- Замените src на путь к вашему mp3-файлу -->
+    <audio id="music" src="Forgive Burial.mp3" loop preload="auto"></audio>
 
-    async function tryPlay() {
-      try {
-        await audio.play();
-      } catch (error) {
-        document.addEventListener('click', async () => {
-          try {
-            await audio.play();
-          } catch (e) {}
-        }, { once: true });
-      }
-    }
+    <script>
+        (function() {
+            // ===== Таймер до 7 ноября 2026 =====
+            const target = new Date(2026, 10, 7, 0, 0, 0);
 
-    window.addEventListener('load', tryPlay);
-  </script>
+            function updateTimer() {
+                const now = new Date();
+                const diff = target - now;
+
+                if (diff <= 0) {
+                    document.getElementById('timer').textContent = '00:00:00:00';
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                const pad = (num) => String(num).padStart(2, '0');
+
+                document.getElementById('timer').textContent =
+                    `${pad(days)}:${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+
+            // ===== Музыка по клику =====
+            const music = document.getElementById('music');
+            let started = false;
+
+            function startMusic() {
+                if (started) return;
+                started = true;
+
+                music.volume = 0.6; // громкость 0.0 – 1.0
+                music.play().catch(err => {
+                    console.warn('Не удалось запустить музыку:', err);
+                });
+            }
+
+            document.body.addEventListener('click', startMusic, { once: true });
+        })();
+    </script>
 </body>
 </html>
